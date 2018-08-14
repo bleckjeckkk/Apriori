@@ -52,7 +52,7 @@ public class Apriori {
         System.out.println("---------------------------------------");
         System.out.println("Database: ");
         System.out.println(db.toString());
-//
+        
         ArrayList<String> uniqueElements = new ArrayList<>();
 
         //getting unique elements
@@ -99,6 +99,7 @@ public class Apriori {
         
         
     }
+    
     static void sortSet(ArrayList<String> set){
         Collections.sort(set,new ElementComparator());
     }
@@ -124,7 +125,6 @@ public class Apriori {
             }
             r.support = sup;
         }
-        
         return lt;
     }
     
@@ -146,21 +146,24 @@ public class Apriori {
             //get candidates for next set
             //iterates over list
             for(LRow row : table.rows){
-                //traverse the list again
+                //traverse the list again to add the other elements
                 for(LRow roww : table.rows){
-                    
+                    //clones values of the current row
                     LRow r = new LRow((ArrayList<String>)row.itemset.clone());
                     
+                    //checks if the incoming element is already in r and the elements in r doesn't exceed the level
                     for(String element : roww.itemset){
                         if(!r.itemset.contains(element) && r.itemset.size() < level){
                             r.itemset.add(element);
                         }
                     }
+                    
                     //if the size is equal to the current level
                     if(r.itemset.size() == level){
                         //checking for uniqueness
                         boolean unique = true;
                         r.sortSet();
+                        //check for uniqueness
                         for(LRow chkrow : lt.rows){
                             if(chkrow.itemset.equals(r.itemset)){
                                 unique = false;
@@ -173,10 +176,7 @@ public class Apriori {
                     }
                 }
             }
-            
-            //get support for next set
-            
-            //get the support for elements
+            //getting support for the new rows
             for(LRow r : lt.rows){
                 int sup = 0;
                 for(Transaction t : db.transactions){
@@ -190,9 +190,11 @@ public class Apriori {
             //drop elements
             lt.dropElements(minSupport);
             
+            //puts the table into the dictionary if there's only one element (row) left in the table
             if(lt.rows.size() <=1){
                 putTableInDictionary(lt,d);                
             }
+            //puts the table into the dictionary and generates the next tables
             else{
                 putTableInDictionary(lt,d);   
                 generateNextSets(lt,d);
