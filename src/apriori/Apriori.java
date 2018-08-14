@@ -6,11 +6,12 @@
 package apriori;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+
+import java.util.Scanner;
 
 /**
  *
@@ -21,35 +22,37 @@ public class Apriori {
     static int level = 1;
     static Database db = new Database();
     static int minSupport = 2;
-    
+    static int confidence;
     public static void main(String[] args) {
-        //START TODO: make a UI and automate
+        Scanner scanner = new Scanner(System.in);
         
-            //the transactions
-            String[] trans0 = {"1", "3", "4"};  
-            String[] trans1 = {"2", "3", "5"};  
-            String[] trans2 = {"1", "2", "3", "5"};  
-            String[] trans3 = {"2","5"};
-
-            //"mapping" transactions to respective transaction objects
-            Transaction t0 = new Transaction(new ArrayList<>(Arrays.asList(trans0)));
-            Transaction t1 = new Transaction(new ArrayList<>(Arrays.asList(trans1)));
-            Transaction t2 = new Transaction(new ArrayList<>(Arrays.asList(trans2)));
-            Transaction t3 = new Transaction(new ArrayList<>(Arrays.asList(trans3)));
-
-            //adding transactions to the "database"
-            db.addTransaction(t0);
-            db.addTransaction(t1);
-            db.addTransaction(t2);
-            db.addTransaction(t3);
-
-            //printing the database
-            System.out.println("---------------------------------------");
-            System.out.println("Database: ");
-            System.out.println(db.toString());
-
-        //END TODO
+        System.out.println("APRIORI");
+        System.out.print("Input number of transactions: ");
+        int numOfTrans = scanner.nextInt();
         
+        for(int i = 0; i < numOfTrans ; i++){
+            System.out.println(" - - - - - ");
+            ArrayList<String> items = new ArrayList<>();
+            System.out.print("Input number of Items for transaction " + i + ": ");
+            int numOfItems = scanner.nextInt();
+            for(int j = 0 ; j < numOfItems; j++){
+                System.out.print("Input item " + j + ": ");
+                items.add((String) scanner.next());
+            }
+            db.addTransaction(new Transaction(items));
+        }
+        System.out.println("Input amounnt of support required ");
+        minSupport = scanner.nextInt();
+        
+        System.out.println("Input amounnt of confidence required (in percentage)");
+        confidence = scanner.nextInt();
+        
+        
+        //printing the database
+        System.out.println("---------------------------------------");
+        System.out.println("Database: ");
+        System.out.println(db.toString());
+//
         ArrayList<String> uniqueElements = new ArrayList<>();
 
         //getting unique elements
@@ -187,8 +190,13 @@ public class Apriori {
             //drop elements
             lt.dropElements(minSupport);
             
-            putTableInDictionary(lt,d);
-            generateNextSets(lt,d);
+            if(lt.rows.size() <=1){
+                putTableInDictionary(lt,d);                
+            }
+            else{
+                putTableInDictionary(lt,d);   
+                generateNextSets(lt,d);
+            }
         }
     }
 }
